@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://rawgithub.com/smart-on-fhir/client-js/master/dist/fhir-client.js"></script>
+    <script>
+    
+    // When logging in, need to use ID for a valid patient (see SMART sandbox list of patients)
+    // 04327b09-4d3a-4c8b-9959-83bc1b358203
+    
+      FHIR.oauth2.authorize({
+          "client": {
+              "client_id": "POTS_app",
+              "scope":  "patient/*.read launch/patient"
+          },
+          "server": "https://launch.smarthealthit.org/v/r2/sim/eyJrIjoiMSJ9/fhir" //"https://launch.smarthealthit.org/v/r2/sim/eyJrIjoiMSIsImoiOiIxIn0/fhir"
+      });
+    </script>
+  </head>
+    <body>	
+    
+    Loading...
+    
+	</body>
+</html>
