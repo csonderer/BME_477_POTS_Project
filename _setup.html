@@ -1,81 +1,60 @@
 <!DOCTYPE html>
-<html>
 
+<!-- Source code for client manipulation based on example code provided by SMART Health IT
+	 CSS template created by TEMPLATED. Template has been modified
+-->
+
+<html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
-    <title>POTS App</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font: 16px Arial;
-            background-color: #5ECFCF;
-        }
-        
-        .autocomplete {
-            position: relative;
-            display: inline-block;
-        }
-        
-        input {
-            border: 1px solid transparent;
-            background-color: #d4d4d4;
-            padding: 10px;
-            font-size: 16px;
-        }
-        
-        input[type=text] {
-            background-color: #d4d4d4;
-            width: 100%
-        }
-        
-        input[type="button"] {
-            background-color: #E88A42;
-            color: #000000;
-            cursor: pointer;
-        }
-        
-        .autocomplete-items {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            border-bottom: none;
-            border-top: none;
-            z-index: 99;
-            /*position the autocomplete items to be same width as the container*/
-            top: 100%;
-            left: 0;
-            right: 0;
-        }
-        
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff;
-            border-bottom: 1px solid #d4d4d4;
-        }
-        
-        .autocomplete-items div:hover {
-            background-color: #e9e9e9;
-        }
-        
-        .autocomplete-active {
-            /*when navigating through the items using arrow keys*/
-            background-color: DodgerBlue !important;
-            color: #ffffff;
-        }
-    </style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+	<title>POTS App</title>
+	<link rel="stylesheet" href="main.css">
+	<link rel="stylesheet" href="_setup.css">
 </head>
 
-<body>
-    <header>
-        <h1>Setup</h1>
-    </header>
-    <a href=_welcome.html>Back to Home</a>
-    <h2>Medication Tracker</h2>
-    <p>Here is your list of current medications: </p>
-    <!-- <form autocomplete="off">
+<body onload="readSymptoms()">	
+	<!-- Header --> 
+	<section id="banner">
+		<p>Settings</p>
+		<ul class="actions">
+			<li><a href="index.html" class="button special">Back to Home</a><li>
+		</ul>
+	</section>
+	
+	<!-- Symptom Tracking -->
+	<section id="one" class="wrapper special">
+		<div class="inner">
+			<header class="major">
+				<h2>Symptom Tracker</h2>
+			</header>		
+			<p>Which symptoms would you like to track?</p>
+			<form autocomplete="off" action="/action_page.php">
+				<div class="autocomplete" style="width: 300px;">
+				<input id="myInput2" type="text" name="mySymptom" placeholder="Add Symptom">
+				</div>
+				<input type="button" id="button2" value="Add" onclick="displaySymptom()"></input>
+			</form>
+			<br><br><br>
+			<header class="major">
+				<h2>Current Symptoms Being Tracked</h2>
+			</header>
+			<ul id="symptom_list"></ul>
+		</div>
+	</section>
+	
+	<!-- Two -->
+	<section id="two" class="wrapper style2 special">
+		<div class="inner narrow">
+     		<p>CSS template created by TEMPLATED. <br> This CSS template has been modified.</p>
+		</div>
+	</section>
+	
+	<!--
+	<h2>Medication Tracker</h2>
+	<p>Here is your list of current medications:</p>
+	<ul id="med_list"></ul>
+
+	<form autocomplete="off">
         <div class="autocomplete" style="width:300px;">
             <input id="myInput1" type="text" name="myMedication" placeholder="Add Medication">
         </div>
@@ -184,15 +163,7 @@
         autocomplete(document.getElementById("myInput1"), medications);
     </script> -->
 
-    <h2>Symptom Tracker</h2>
-    <p>Which symptoms would you like to track?</p>
-    <form autocomplete="off" action="/action_page.php">
-        <div class="autocomplete" style="width:300px;">
-            <input id="myInput2" type="text" name="mySymptom" placeholder="Add Symptom">
-        </div>
-        <input type="button" id="button2" value="Add" onclick="JavaScript:addSymptom()"></input>
-    </form>
-    <script>
+	<script> 	
         function autocomplete(inp, arr) {
             /*the autocomplete function takes in the text field element and an array of possible values*/
             var currentFocus;
@@ -284,7 +255,7 @@
         /*An array containing common POTS symptoms including SNOMED terminology in parentheses if different*/
         var symptoms = ["Pain (chronic pain)", "Fatigue", "Diarrhea", "Constipation",
             "Vomiting", "Nausea", "Dizziness", "Lightheadedness", "Fainting (Syncope)",
-            "Near fainting (Near syncope)", "Light sensitivity (eyes sensitive to light)",
+            "Near fainting (Near syncope)", "GI Symptoms", "Muscle/Joint Pain", "Headache", "Light sensitivity (eyes sensitive to light)",
             "Noise sensitivity (Noise intolerance)", "Insomnia", "Vertigo",
             "Temperature sensitivity (Sensitive to changes in ambient temperature)",
             "Weakness (asthenia)", "Heart racing (tachycardia)", "Chest pain",
@@ -295,6 +266,61 @@
         /*initiate the autocomplete function on the "myInput" element, and pass along 
         the symptoms array as possible autocomplete values*/
         autocomplete(document.getElementById("myInput2"), symptoms);
-    </script>
+        
+        function displaySymptom() {
+        	// Display added symptoms
+        	var symptom_list = document.getElementById("symptom_list");
+        	var symptomToAdd = document.getElementById("myInput2").value;
+        	
+        	symptom_list.innerHTML += "<li>" + symptomToAdd + "</li>";   
+        	
+        	writeSymptoms();
+        }   
+        
+     	// Read symptoms
+    	function readSymptoms() {
+    		var ajax = new XMLHttpRequest(); 
+    		var symptoms = ""; // Holds JS array of symptom strings
+    		var result = ""; // Holds string to be returned to HTML page
+    		
+    		ajax.open("GET", "_setup.php?read=1", true); // Arguments: method, url, async
+    		ajax.send();
 
+    		// Use AJAX to get an array of image urls
+    		ajax.onreadystatechange = function() {
+    			// If the server is ready and there are no errors
+    			if (ajax.readyState == 4 && ajax.status == 200) {		
+    				// Parse AJAX to get a Javascript array of all the symptom strings
+    				symptoms = JSON.parse(ajax.responseText);
+    				
+    				// Format all the symptom strings to be HTML list elements
+    				for (var i = 0; i < symptoms.length; i++) {
+    					result += "<li>" + symptoms[i] + "</li>";
+    				}
+    				
+    				// Change the inner HTML of the ul on the webpage
+    				symptom_list.innerHTML = result;
+    			} // End if statement
+    		}; // End anonymous function
+    	}
+    	
+    	// Write symptoms
+    	function writeSymptoms() {
+    		var ajax = new XMLHttpRequest(); 
+    		var symptoms = ""; // Holds JS array of symptom strings
+    		var result = ""; // Holds string to be returned to HTML page
+    		var symptomToAdd = document.getElementById("myInput2").value;
+    		
+    		ajax.open("GET", "_setup.php?write=1&symptom=" + symptomToAdd, true); // Arguments: method, url, async
+    		ajax.send();
+
+    		// Use AJAX to get an array of image urls
+    		ajax.onreadystatechange = function() {
+    			// If the server is ready and there are no errors
+    			if (ajax.readyState == 4 && ajax.status == 200) {		
+    				
+    			} // End if statement
+    		}; // End anonymous function
+    	}
+    </script>
 </html>

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html>
 
+<!-- Source code for client manipulation based on example code provided by SMART Health IT
+	 CSS template created by TEMPLATED. Template has been modified
+-->
+
+<html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
     <title>POTS App</title>
+    <link rel="stylesheet" href="main.css">
     <style>
         * {
             box-sizing: border-box;
         }
         
-        body {
-            font: 16px Arial;
-            background-color: #5ECFCF
-        }
-        
         .slidecontainer {
             width: 50%;
+            margin-left: 25%;
             /*length of slider relative to screen*/
         }
         
@@ -54,73 +55,164 @@
     </style>
 </head>
 
-<body>
-    <header>
-        <h1>Record Today's Data</h1>
-    </header>
-    <a href="_welcome.html">Back to Home</a>
-    <h2>Daily Symptom Assessment</h2>
-    <p>Use the sliders to indicate the severity of your symptoms today (0=no trouble with this symptom, 10=extreme trouble with this symptom).</p>
-    <h4>Fatigue:</h4>
+<body onload="readSymptoms()">
+    <!-- Header --> 
+	<section id="banner">
+		<p>Record Today's Data</p>
+		<ul class="actions">
+			<li><a href="index.html" class="button special">Back to Home</a><li>
+		</ul>
+	</section>
+	
+	<!-- Symptom Tracking -->
+	<section id="one" class="wrapper special">
+		<div class="inner">
+			<header class="major">
+				<h2>Daily Symptom Assessment</h2>
+			</header>		
+			<p>Use the sliders to indicate the severity of your symptoms today (0=no trouble with this symptom, 10=extreme trouble with this symptom).</p>
+			<div id="symptom_sliders"></div>
+		
+		<!--  
+			<h4 class="h4_left">Fatigue:</h4>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="10" value="5" class="slider"
+					id="symptom1" oninput="updateSeverity(this.value, 1)">
+				<p>
+					<span id="demo1"></span>
+				</p>
+			</div>
+			<script>
+				var slider1 = document.getElementById("symptom1");
+				var output1 = document.getElementById("demo1");
+				output1.innerHTML = slider1.value;
 
-    <div class="slidecontainer">
-        <input type="range" min="0" max="10" value="5" class="slider" id="symptom1">
-        <p><span id="demo1"></span></p>
-    </div>
-    <script>
-        var slider1 = document.getElementById("symptom1");
-        var output1 = document.getElementById("demo1");
-        output1.innerHTML = slider1.value;
+				//slider1.oninput = function() {
+				//	output1.innerHTML = this.value;
+				//}
+			</script>
+			
+			
+			<h4 class="h4_left">GI Symptoms:</h4>
 
-        slider1.oninput = function() {
-            output1.innerHTML = this.value;
-        }
-    </script>
-    <h4>GI Symptoms:</h4>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="10" value="5" class="slider"
+					id="symptom2">
+				<p>
+					<span id="demo2"></span>
+				</p>
+			</div>
+			<script>
+				var slider2 = document.getElementById("symptom2");
+				var output2 = document.getElementById("demo2");
+				output2.innerHTML = slider2.value;
 
-    <div class="slidecontainer">
-        <input type="range" min="0" max="10" value="5" class="slider" id="symptom2">
-        <p><span id="demo2"></span></p>
-    </div>
-    <script>
-        var slider2 = document.getElementById("symptom2");
-        var output2 = document.getElementById("demo2");
-        output2.innerHTML = slider2.value;
+				slider2.oninput = function() {
+					output2.innerHTML = this.value;
+				}
+			</script>
+			
+			
+			<h4 class="h4_left">Muscle/Joint Pain:</h4>
 
-        slider2.oninput = function() {
-            output2.innerHTML = this.value;
-        }
-    </script>
-    <h4>Muscle/Joint Pain:</h4>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="10" value="5" class="slider"
+					id="symptom3">
+				<p>
+					<span id="demo3"></span>
+				</p>
+			</div>
+			<script>
+				var slider3 = document.getElementById("symptom3");
+				var output3 = document.getElementById("demo3");
+				output3.innerHTML = slider3.value;
 
-    <div class="slidecontainer">
-        <input type="range" min="0" max="10" value="5" class="slider" id="symptom3">
-        <p><span id="demo3"></span></p>
-    </div>
-    <script>
-        var slider3 = document.getElementById("symptom3");
-        var output3 = document.getElementById("demo3");
-        output3.innerHTML = slider3.value;
+				slider3.oninput = function() {
+					output3.innerHTML = this.value;
+				}
+			</script>
+			<h4 class="h4_left">Headache:</h4>
 
-        slider3.oninput = function() {
-            output3.innerHTML = this.value;
-        }
-    </script>
-    <h4>Headache:</h4>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="10" value="5" class="slider"
+					id="symptom4">
+				<p>
+					<span id="demo4"></span>
+				</p>
+			</div>
+			<script>
+				var slider = document.getElementById("symptom4");
+				var output = document.getElementById("demo4");
+				output.innerHTML = slider.value;
 
-    <div class="slidecontainer">
-        <input type="range" min="0" max="10" value="5" class="slider" id="symptom4">
-        <p><span id="demo4"></span></p>
-    </div>
-    <script>
-        var slider4 = document.getElementById("symptom4");
-        var output4 = document.getElementById("demo4");
-        output4.innerHTML = slider4.value;
+				slider.oninput = function() {
+					output.innerHTML = this.value;
+				}
+			</script>
+		-->
 
-        slider4.oninput = function() {
-            output4.innerHTML = this.value;
-        }
-    </script>
+			<ul class="actions">
+			<li id="submitData"><a class="button special" onclick="dataSentMsg()">Submit Data</a><li>
+			</ul>
+		</div>		
+	</section>
+	
+	<!-- Two -->
+	<section id="two" class="wrapper style2 special">
+		<div class="inner narrow">
+     		<p>CSS template created by TEMPLATED. <br> This CSS template has been modified.</p>
+		</div>
+	</section>
+				
+	<script>
+	var slider = document.getElementById("symptom_sliders");
+	
+	function dataSentMsg() {
+		var msg = "Your data has been successfully submitted!";
+		var base = document.getElementById("submitData");
+		
+		base.innerHTML = msg;
+	}
+	
+	// Change the displayed severity a symptom when the slider is moved 
+	function updateSeverity(value, elementNum) {
+		var elementToUpdate = document.getElementById("demo" + elementNum);
+		
+		elementToUpdate.innerHTML = value;
+	}	
+	
+	// Read symptoms
+	function readSymptoms() {
+		var ajax = new XMLHttpRequest(); 
+		var symptoms = ""; // Holds JS array of symptom strings
+		var result = ""; // Holds string to be returned to HTML page
+		
+		ajax.open("GET", "_setup.php?read=1", true); // Arguments: method, url, async
+		ajax.send();
+
+		// Use AJAX to get an array of image urls
+		ajax.onreadystatechange = function() {
+			// If the server is ready and there are no errors
+			if (ajax.readyState == 4 && ajax.status == 200) {		
+				// Parse AJAX to get a Javascript array of all the symptom strings
+				symptoms = JSON.parse(ajax.responseText);
+				
+				// Format all the symptom strings to be HTML slider elements
+				for (var i = 0; i < symptoms.length; i++) {
+					var demoStr = "'demo" + i + "'";
+					
+					result += "<h4 class='h4_left'>" + symptoms[i] + ":</h4>";
+					result += "<div class='slidecontainer'>";
+					result += "<input type='range' min='0' max='10' value='5' class='slider' id='symptom" + i + "' oninput='updateSeverity(this.value, " + i + ")')>";
+					result += "<p><span id='demo" + i + "'>5</span></p></div>";
+				}
+				
+				// Change the inner HTML of the ul on the webpage
+				slider.innerHTML += result;
+				
+			} // End if statement
+		}; // End anonymous function
+	}
+	</script>
 </body>
-
 </html>

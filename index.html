@@ -1,79 +1,135 @@
 <!DOCTYPE html>
+
+<!-- Source code for client manipulation based on example code provided by SMART Health IT
+	 Source code for plot creation is from Chart.js
+	 CSS template created by TEMPLATED. Template has been modified
+-->
+
 <html>
-  <head>
-    <script src="https://rawgithub.com/smart-on-fhir/client-js/master/dist/fhir-client.js"></script>
-  </head>
-  <body>
-    <h1>Medications for <span id="name"></span></h1>
-    
-    <!-- 
-    <ul id="med_list"></ul>
-    
-    <form>
-    <input type="radio" name="medication" value="advil">Advil<br>
-	<input type="radio" name="medication" value="aspirin">Aspirin<br>
-	<input type="radio" name="medication" value="ibuprofen">Ibuprofen<br>
-	<input type="radio" name="medication" value="tylenol">Tylenol<br>
-	<input type="submit" value="Submit">
-	</form>
-    -->
-    
-    
-    <ul id="med_list"></ul>
-    
-    <script type="text/javascript">
-    
-    // Can run this on SMART sandbox, but can not edit data for existing patients
-    // So try to run with synthea database
-    
- 	// Use after authorization success
- 	// The authorization process (see launch.html) provided an instance of the FHIR.client (called 'smart'), which will be used below
- 	FHIR.oauth2.ready(function(smart) {
-    	smart.patient.read().then(function(pt) {
-    		displayPatient(pt);
-    	});
-    	
-    	smart.patient.api.fetchAllWithReferences({type: "MedicationOrder"},["MedicationOrder.medicationReference"]).then(function(results, refs) {
-    		results.forEach(function(prescription){
-    			if (prescription.medicationCodeableConcept) {
-    				displayMedication(prescription.medicationCodeableConcept.coding);
-    			} 
-    			else if (prescription.medicationReference) {
-    				var med = refs(prescription, prescription.medicationReference);
-    				displayMedication(med && med.code.coding || []);
-    			}
-    		});
-    	});
-    });
-    
-        function getPatientName (pt) {
-            if (pt.name) {
-                var names = pt.name.map(function(name) {
-                    return name.given.join(" ") + " " + name.family.join(" ");
-                });
-                return names.join(" / ")
-            } else {
-                return "anonymous";
-            }
-        }
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+	<title>POTS App</title>
+	<link rel="stylesheet" href="main.css">
+	<script src="https://rawgithub.com/smart-on-fhir/client-js/master/dist/fhir-client.js"></script>
+</head>
+ 
+<!-- <body onload="plotGraph()"> -->
+<body> 
+	<!-- Banner -->
+ 	<section id="banner">
+		<h2>POTS Medication and Symptom Management App</h2>
+		<p>Welcome <span id="name"></span></p>
+		<ul class="actions">
+			<li><a href="_setup.html" class="button special">Settings</a></li>
+			<li><a href="_collectdata.html" class="button special">Track Symptoms</a></li>
+		</ul>
+	</section>
 
-        function getMedicationName (medCodings) {
-            var coding = medCodings.find(function(c){
-                return c.system == "http://www.nlm.nih.gov/research/umls/rxnorm";
-            });
+	<!-- One -->
+	<section id="one" class="wrapper special">
+		<div class="inner">
+			<header class="major">
+				<h2>Your Current Medications</h2>
+			</header>
+			<ul id="med_list"></ul>
+			<br><br>				
+			<header class="major">
+				<h2>Your Symptom Trends</h2>
+			</header>
+			<canvas id="myChart" width="350" height="350"></canvas>
+		</div>
+	</section>
 
-            return coding && coding.display || "Unnamed Medication(TM)"
-        }
+	<!-- Two -->
+	<section id="two" class="wrapper style2 special">
+		<div class="inner narrow">
+     		<p>CSS template created by TEMPLATED. <br> This CSS template has been modified.</p>
+		</div>
+	</section>
+	
+	<script src="client.js"></script>
+    <script src="Chart.bundle.js"></script>
+    <script>
+    var symptoms = ""; // Holds JS array of symptom strings
+	var severities = ""; // Holds JS array of symptom severity values (integer)
+	var dates = ""; // Holds JS array of dates
+	
+ 	// Obtain symptom data to graph
+	function plotGraph() {
+		var ajax = new XMLHttpRequest(); 
+		var result = ""; // Holds string to be returned to HTML page
+		var count = 0;
+		
+		ajax.open("GET", "_setup.php?read=1&plot=1", true); // Arguments: method, url, async
+		ajax.send();
 
-        function displayPatient (pt) {
-            document.getElementById('name').innerHTML = getPatientName(pt);
-        }
-
-        var med_list = document.getElementById('med_list');
-
-        function displayMedication (medCodings) {
-            med_list.innerHTML += "<li> " + getMedicationName(medCodings) + "</li>";
-        }                
-		</script>
-	</body>
+		// Use AJAX to get an array of image urls
+		ajax.onreadystatechange = function() {
+			// If the server is ready and there are no errors
+			if (ajax.readyState == 4 && ajax.status == 200) {			
+				result = JSON.parse(ajax.responseText);
+				count = result[0];
+				
+				// Parse result into symptoms, severities, dates arrays and then plot graph
+			} // End if statement
+		}; // End anonymous function
+	}
+    
+	var ctx = document.getElementById("myChart").getContext('2d');
+	var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ["Oct 7", "Nov 11", "Nov 4", "Nov 17", "Nov 30", "Dec 2"],
+        datasets: [{
+            label: 'Headache',
+            data: [7, 4, 3, 5, 2, 3], 
+            fill: false,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }, {
+        	label: 'Fatigue',
+        	data: [8, 5, 7, 9, 6, 10],
+        	fill: false,
+        	backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        	borderColor: 'rgba(54, 162, 235, 1)',
+        	borderWidth: 1        	
+        }, {
+        	label: 'GI Symptoms',
+        	data: [2, 3, 1, 0, 2, 1],
+        	fill: false,
+        	backgroundColor: 'rgba(255, 206, 86, 0.2)',
+        	borderColor: 'rgba(255, 206, 86, 1)',
+        	borderWidth: 1
+        }, {
+        	label: 'Muscle/Joint Pain',
+        	data: [1, 4, 5, 3, 4, 4],
+        	fill: false,
+        	backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        	borderColor: 'rgba(75, 192, 192, 1)',
+       	 	borderWidth: 1
+        }]
+    	},
+    	options: {
+        	scales: {
+        		xAxes: [{
+        			scaleLabel: {
+						display: true,
+						labelString: 'Date'
+					}
+        		}],
+            	yAxes: [{
+                	ticks: {
+                    	beginAtZero:true
+                	},
+                	scaleLabel: {
+						display: true,
+						labelString: 'Symptom Severity'
+					}
+            	}]
+        	}
+    	}
+	});	
+	</script>
+</body>
 </html>
